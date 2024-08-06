@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(MyApp());
@@ -48,6 +49,11 @@ class _TodoListPageState extends State<TodoListPage> {
       _taskController.clear();
       _errorText = null;
     });
+    Fluttertoast.showToast(
+      msg: "Task added successfully",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+    );
   }
 
   void _removeCompletedTasks() {
@@ -59,19 +65,29 @@ class _TodoListPageState extends State<TodoListPage> {
         }
       }
     });
+    Fluttertoast.showToast(
+      msg: "Completed tasks removed successfully",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+    );
+  }
+
+  void _toggleAllTasks(bool? value) {
+    setState(() {
+      for (int i = 0; i < _completed.length; i++) {
+        _completed[i] = value!;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    bool anyCompleted = _completed.contains(true);
+    bool allSelected = _completed.isNotEmpty && _completed.every((completed) => completed);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Todo List'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: _removeCompletedTasks,
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -94,12 +110,31 @@ class _TodoListPageState extends State<TodoListPage> {
                   onPressed: _addTask,
                   child: Text('Add'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
+                    primary: Colors.teal,
                   ),
                 ),
               ],
             ),
             SizedBox(height: 20.0),
+            if (_tasks.isNotEmpty)
+              Row(
+                children: [
+                  Checkbox(
+                    value: allSelected,
+                    onChanged: (bool? value) {
+                      _toggleAllTasks(value);
+                    },
+                  ),
+                  Text('Select All'),
+                  Spacer(),
+                  if (anyCompleted)
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: _removeCompletedTasks,
+                    ),
+                ],
+              ),
+            SizedBox(height: 10.0),
             Expanded(
               child: _tasks.isEmpty
                   ? Center(
