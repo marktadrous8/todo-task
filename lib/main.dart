@@ -110,7 +110,7 @@ class _TodoListPageState extends State<TodoListPage> {
                   onPressed: _addTask,
                   child: Text('Add'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.teal,
+                    primary: Colors.white,
                   ),
                 ),
               ],
